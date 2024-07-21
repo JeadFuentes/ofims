@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 Route::view('/', 'welcome');
 
@@ -13,3 +14,7 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 require __DIR__.'/auth.php';
+
+Route::get('/user',[UserController::class,'user'])->name('user.user');
+Route::get('/devices',[UserController::class,'devices'])->name('user.devices');
+Route::get('/alarm',[UserController::class,'alarm'])->name('user.alarm');
