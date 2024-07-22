@@ -9,87 +9,62 @@
 
     @vite(['resources/sass/app.scss','resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
-    <nav class="sidebar">
-        <header>
-            <div class="image-text">
-                <span class="image">
-                    <!--<img src="logo.png" alt="">-->
-                </span>
-
-                <div class="text logo-text">
-                    <span class="name">TomTom</span>
-                    <span class="profession">New Edge</span>
-                </div>
-            </div>
-
-            <i class='bx bx-chevron-right toggle'></i>
-        </header>
-
-        <div class="menu-bar">
-            <div class="menu">
-
-                <li class="search-box">
-                    <i class='bx bx-search icon'></i>
-                    <input type="text" placeholder="Search...">
+<body style="background-color: #550000 ">
+    <div class="container text-center mt-5 mb-3">
+        <h1 class="fs-1 fw-bolder text-danger">ONLINE FIRE INCIDENT MAPPING SYSTEM</h1>
+        <p class="fs-3 fw-bolder text-danger">FIRE ALERTNESS</p>
+        <hr class="text-white">
+    </div>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-lg">
+          <div class="navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                @if ($title == 'user')
+                    <li id="user" class="nav-item bg-danger fw-bolder">
+                        <a class="nav-link" href="{{ route('user.user') }}">User</a>
+                    </li>
+                @else
+                    <li id="user" class="nav-item">
+                        <a class="nav-link" href="{{ route('user.user') }}">User</a>
+                    </li>
+                @endif
+                @if ($title == 'devices')
+                    <li id="devices" class="nav-item bg-danger fw-bolder">
+                        <a class="nav-link" href="{{ route('user.devices') }}">Devices</a>
+                    </li>
+                @else
+                    <li id="devices" class="nav-item">
+                        <a class="nav-link" href="{{ route('user.devices') }}">Devices</a>
+                    </li>
+                @endif
+                @if ($title == 'alarm')
+                    <li id="alarm" class="nav-item bg-danger fw-bolder">
+                        <a class="nav-link" href="{{ route('user.alarm') }}">Alarm</a>
+                    </li>
+                @else
+                    <li id="alarm" class="nav-item">
+                        <a class="nav-link" href="{{ route('user.alarm') }}">Alarm</a>
+                    </li>
+                @endif
+              @if ($title == 'respond')
+                <li id="respond" class="nav-item bg-danger fw-bolder">
+                    <a class="nav-link" href="{{ route('user.respond') }}">Respond</a>
                 </li>
-
-                <ul class="menu-links">
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-user icon' ></i>
-                            <span class="text nav-text">User</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-devices icon' ></i>
-                            <span class="text nav-text">Devices</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bxs-alarm-exclamation icon'></i>
-                            <span class="text nav-text">Alarm Trigger</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-reply-all icon' ></i>
-                            <span class="text nav-text">Response</span>
-                        </a>
-                    </li>
-
-                </ul>
-            </div>
-
-            <div class="bottom-content">
-                <li class="">
-                    <a href="#">
-                        <i class='bx bx-log-out icon' ></i>
-                        <span class="text nav-text">Logout</span>
-                    </a>
+              @else
+                <li id="respond" class="nav-item">
+                    <a class="nav-link" href="{{ route('user.respond') }}">Respond</a>
                 </li>
-
-                <li class="mode">
-                    <div class="sun-moon">
-                        <i class='bx bx-moon icon moon'></i>
-                        <i class='bx bx-sun icon sun'></i>
-                    </div>
-                    <span class="mode-text text">Dark mode</span>
-
-                    <div class="toggle-switch">
-                        <span class="switch"></span>
-                    </div>
-                </li>
-
-            </div>
+              @endif
+            </ul>
+              <button class="btn btn-outline-danger" type="button"  data-toggle="modal" data-target="#form">
+                <i class="fa-regular fa-bell"></i>
+              </button>
+          </div>
         </div>
-
-    </nav>
+      </nav>
+      <x-modal-notif>
+        
+      </x-modal-notif>
     <section class="home">
         {{$slot}}
     </section>

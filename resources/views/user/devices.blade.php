@@ -1,8 +1,10 @@
 <x-main-layout>
+  <x-slot name="title">
+    devices
+  </x-slot>
     <div class="container-sm">
-    <h5 class="text">Devices Page</h5>
     <button type="button" class="btn btn-primary ml-3 mt-3 mb-2">New Device</button>
-    <table class="ml-3 table table-striped table-hover" style="width: 90%">
+    <table class="ml-3 table table-striped table-hover" style="width: 100%">
         <thead class="text-center">
           <tr>
             <th scope="col">#</th>

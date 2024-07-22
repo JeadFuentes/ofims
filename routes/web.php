@@ -18,3 +18,4 @@ require __DIR__.'/auth.php';
 Route::get('/user',[UserController::class,'user'])->name('user.user');
 Route::get('/devices',[UserController::class,'devices'])->name('user.devices');
 Route::get('/alarm',[UserController::class,'alarm'])->name('user.alarm');
+Route::get('/respond',[UserController::class,'respond'])->name('user.respond');

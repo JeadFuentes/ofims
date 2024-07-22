@@ -17,4 +17,8 @@ class UserController extends Controller
     public function alarm(){
         return view("user.alarm");
     }
+
+    public function respond(){
+        return view("user.respond");
+    }
 }
