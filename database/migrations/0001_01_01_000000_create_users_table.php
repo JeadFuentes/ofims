@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('number');
             $table->string('usertype');
-            $table->string('username');
+            $table->string('email');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

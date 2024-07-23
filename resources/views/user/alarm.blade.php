@@ -9,6 +9,7 @@
           <tr>
             <th scope="col">#</th>
             <th scope="col">Device name</th>
+            <th scope="col">Responder</th>
             <th scope="col">Response Time</th>
             <th scope="col">Alarm Time</th>
             <th scope="col">Action</th>
@@ -17,12 +18,12 @@
         <tbody class="table-group-divider text-center">
           <tr>
             <th scope="row">1</th>
+            <td>Otto</td>
             <td>Mark</td>
             <td>Otto</td>
             <td>@mdo</td>
             <td>
-                <button type="button" class="btn btn-sm btn-success">Edit</button>
-                <button type="button" class="btn btn-sm btn-danger">Delete</button>
+                <button type="button" class="btn btn-sm btn-success">RESPOND</button>
             </td>
           </tr>
         </tbody>

@@ -46,15 +46,6 @@
                         <a class="nav-link" href="{{ route('user.alarm') }}">Alarm</a>
                     </li>
                 @endif
-              @if ($title == 'respond')
-                <li id="respond" class="nav-item bg-danger fw-bolder">
-                    <a class="nav-link" href="{{ route('user.respond') }}">Respond</a>
-                </li>
-              @else
-                <li id="respond" class="nav-item">
-                    <a class="nav-link" href="{{ route('user.respond') }}">Respond</a>
-                </li>
-              @endif
             </ul>
               <button class="btn btn-outline-danger" type="button"  data-toggle="modal" data-target="#form">
                 <i class="fa-regular fa-bell"></i>

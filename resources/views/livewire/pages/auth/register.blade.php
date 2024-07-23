@@ -11,6 +11,9 @@ use Livewire\Volt\Component;
 new #[Layout('layouts.guest')] class extends Component
 {
     public string $name = '';
+    public string $address = '';
+    public string $number;
+    public string $usertype = '';
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
@@ -22,6 +25,9 @@ new #[Layout('layouts.guest')] class extends Component
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
+            'address' => ['required', 'string', 'max:255'],
+            'number' => ['required', 'max:11'],
+            'usertype' => ['required', 'string'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -43,6 +49,32 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input wire:model="name" id="name" class="block mt-1 w-full" type="text" name="name" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        </div>
+
+        <!-- Address -->
+        <div class="mt-4">
+            <x-input-label for="address" :value="__('Address')" />
+            <x-text-input wire:model="address" id="address" class="block mt-1 w-full" type="text" name="address" required autofocus autocomplete="address" />
+            <x-input-error :messages="$errors->get('address')" class="mt-2" />
+        </div>
+
+        <!-- Number -->
+        <div class="mt-4">
+            <x-input-label for="number" :value="__('Number')" />
+            <x-text-input wire:model="number" id="number" class="block mt-1 w-full" type="number" name="number" required autofocus autocomplete="number" />
+            <x-input-error :messages="$errors->get('number')" class="mt-2" />
+        </div>
+
+        <!-- Usertype -->
+        <div class="mt-4">
+            <x-input-label for="usertype" :value="__('Usertype')" />
+            <select wire:model="usertype" id="usertype" class="rounded-md select block mt-1 w-full" name="usertype">
+                <option value="">Please Select User Type</option>
+                <option value="Owner">Owner</option>
+                <option value="Fireman">Fireman</option>
+                <option value="Admin">Admin</option>
+            </select>
+            <x-input-error :messages="$errors->get('usertype')" class="mt-2" />
         </div>
 
         <!-- Email Address -->

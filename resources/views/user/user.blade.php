@@ -3,7 +3,9 @@
     user
   </x-slot>
     <div class="container-sm">
-    <button type="button" class="btn btn-primary ml-0 mt-3 mb-2">New user</button>
+    <button type="button" class="btn btn-primary ml-0 mt-3 mb-2" data-bs-toggle="modal" data-bs-target="#usermodal">New user</button>
+    <x-user-modal>
+    </x-user-modal>
     <table class="ml-3 table table-striped table-hover" style="width: 100%">
         <thead class="text-center">
           <tr>
