@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('triger', function (Blueprint $table) {
             $table->id();
             $table->string('device_id')->constrained('devices');
-            $table->string('user_id')->constrained('users');
+            $table->string('user_id')->constrained('users')->nullable();
+            $table->string('lat');
+            $table->string('long');
             $table->timestamps();
         });
     }

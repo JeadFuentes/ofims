@@ -35,10 +35,14 @@ new #[Layout('layouts.guest')] class extends Component
         $validated['password'] = Hash::make($validated['password']);
 
         event(new Registered($user = User::create($validated)));
+        if (Auth::user()){
+            $this->redirect(route('user.user', absolute: false), navigate: true);
+        }
+        else{
+            Auth::login($user);
 
-        Auth::login($user);
-
-        $this->redirect(route('dashboard', absolute: false), navigate: true);
+            $this->redirect(route('dashboard', absolute: false), navigate: true);
+        }
     }
 }; ?>
 

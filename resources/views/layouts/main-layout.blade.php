@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     
     <title>OFIMS</title>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     @vite(['resources/sass/app.scss','resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body style="background-color: #550000 ">
