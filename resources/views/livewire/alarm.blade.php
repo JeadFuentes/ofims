@@ -46,7 +46,6 @@ new class extends Component {
                         <td>{{$res['res_time']}}</td>
                         <td>{{$res['alarm_time']}}</td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-danger">RESPOND</button>
                             <button type="button" class="btn btn-sm btn-success">VIEW MAP</button>
                         </td>
                     </tr>
