@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Triger extends Model
 {
     use HasFactory;
-    protected $table = 'trigger'; 
+    protected $table = 'triger'; 
     
     protected $fillable = [
         'device_id',
-        'res_time',
+        'user_id',
     ];
 }

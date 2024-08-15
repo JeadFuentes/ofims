@@ -21,6 +21,10 @@ new class extends Component {
             ];
         }
     }
+
+    public function openMaps($id){
+        $this->redirect(route('user.maps', $id));
+    }
 }; ?>
 
 <div>
@@ -46,7 +50,7 @@ new class extends Component {
                         <td>{{$res['res_time']}}</td>
                         <td>{{$res['alarm_time']}}</td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-success">VIEW MAP</button>
+                            <button wire:click="openMaps({{$res['id']}})" type="button" class="btn btn-sm btn-success">VIEW MAP</button>
                         </td>
                     </tr>
                 @endforeach

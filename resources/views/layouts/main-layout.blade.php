@@ -19,33 +19,58 @@
         <div class="container-lg">
           <div class="navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                @if ($title == 'user')
-                    <li id="user" class="nav-item bg-danger fw-bolder">
-                        <a class="nav-link" href="{{ route('user.user') }}">User</a>
-                    </li>
-                @else
-                    <li id="user" class="nav-item">
-                        <a class="nav-link" href="{{ route('user.user') }}">User</a>
-                    </li>
+                @if (Auth::user()->usertype == 'Admin')
+                    @if ($title == 'user')
+                        <li id="user" class="nav-item bg-danger fw-bolder">
+                            <a class="nav-link" href="{{ route('user.user') }}">User</a>
+                        </li>
+                    @else
+                        <li id="user" class="nav-item">
+                            <a class="nav-link" href="{{ route('user.user') }}">User</a>
+                        </li>
+                    @endif
+                    @if ($title == 'devices')
+                        <li id="devices" class="nav-item bg-danger fw-bolder">
+                            <a class="nav-link" href="{{ route('user.devices') }}">Devices</a>
+                        </li>
+                    @else
+                        <li id="devices" class="nav-item">
+                            <a class="nav-link" href="{{ route('user.devices') }}">Devices</a>
+                        </li>
+                    @endif
+                    @if ($title == 'alarm')
+                        <li id="alarm" class="nav-item bg-danger fw-bolder">
+                            <a class="nav-link" href="{{ route('user.alarm') }}">Alarm</a>
+                        </li>
+                    @else
+                        <li id="alarm" class="nav-item">
+                            <a class="nav-link" href="{{ route('user.alarm') }}">Alarm</a>
+                        </li>
+                    @endif
+                @elseif (Auth::user()->usertype == 'Firefighter')
+                    @if ($title == 'alarm')
+                        <li id="alarm" class="nav-item bg-danger fw-bolder">
+                            <a class="nav-link" href="{{ route('user.alarm') }}">Alarm</a>
+                        </li>
+                    @else
+                        <li id="alarm" class="nav-item">
+                            <a class="nav-link" href="{{ route('user.alarm') }}">Alarm</a>
+                        </li>
+                    @endif
+                @elseif (Auth::user()->usertype == 'Owner')
+                    @if ($title == 'devices')
+                            <li id="devices" class="nav-item bg-danger fw-bolder">
+                                <a class="nav-link" href="{{ route('user.devices') }}">Devices</a>
+                            </li>
+                        @else
+                            <li id="devices" class="nav-item">
+                                <a class="nav-link" href="{{ route('user.devices') }}">Devices</a>
+                            </li>
+                        @endif
                 @endif
-                @if ($title == 'devices')
-                    <li id="devices" class="nav-item bg-danger fw-bolder">
-                        <a class="nav-link" href="{{ route('user.devices') }}">Devices</a>
-                    </li>
-                @else
-                    <li id="devices" class="nav-item">
-                        <a class="nav-link" href="{{ route('user.devices') }}">Devices</a>
-                    </li>
-                @endif
-                @if ($title == 'alarm')
-                    <li id="alarm" class="nav-item bg-danger fw-bolder">
-                        <a class="nav-link" href="{{ route('user.alarm') }}">Alarm</a>
-                    </li>
-                @else
-                    <li id="alarm" class="nav-item">
-                        <a class="nav-link" href="{{ route('user.alarm') }}">Alarm</a>
-                    </li>
-                @endif
+                <li id="alarm" class="nav-item">
+                    <a class="nav-link" href="{{ route('user.logout') }}">Logout</a>
+                </li>
             </ul>
               <button class="btn btn-outline-danger" type="button"  data-toggle="modal" data-target="#form">
                 <i class="fa-regular fa-bell"></i>

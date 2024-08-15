@@ -17,19 +17,37 @@ new class extends Component {
     public $dev_number = '';
 
     public function mount(){
-        $devices = DB::table('users')->join('devices','users.id','=','devices.userid')
-        ->select('devices.id as id', 'users.name as owner', 'devices.dev_name as name', 'devices.dev_serial as serial',
-         'devices.dev_address as address', 'devices.dev_number as number')->get();
+        if (Auth::user()->usertype == 'Admin'){
+            $devices = DB::table('users')->join('devices','users.id','=','devices.userid')
+            ->select('devices.id as id', 'users.name as owner', 'devices.dev_name as name', 'devices.dev_serial as serial',
+            'devices.dev_address as address', 'devices.dev_number as number')->get();
 
-        foreach ($devices as $dev) {
-            $this->results [] =[
-            'id' => $dev->id,
-            'owner' => $dev->owner,
-            'name' => $dev->name,
-            'serial' => $dev->serial,
-            'address' => $dev->address,
-            'number' => $dev->number,
-        ];
+            foreach ($devices as $dev) {
+                $this->results [] =[
+                'id' => $dev->id,
+                'owner' => $dev->owner,
+                'name' => $dev->name,
+                'serial' => $dev->serial,
+                'address' => $dev->address,
+                'number' => $dev->number,
+            ];
+            }
+        }
+        else{
+            $devices = DB::table('users')->join('devices','users.id','=','devices.userid')
+            ->select('devices.id as id', 'users.name as owner', 'devices.dev_name as name', 'devices.dev_serial as serial',
+            'devices.dev_address as address', 'devices.dev_number as number')->where('devices.userid',Auth::user()->id)->get();
+
+            foreach ($devices as $dev) {
+                $this->results [] =[
+                'id' => $dev->id,
+                'owner' => $dev->owner,
+                'name' => $dev->name,
+                'serial' => $dev->serial,
+                'address' => $dev->address,
+                'number' => $dev->number,
+            ];
+            }
         }
     }
 
