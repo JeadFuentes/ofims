@@ -156,7 +156,7 @@ new class extends Component {
                         <td>{{$res['number']}}</td>
                         <td>
                             <button wire:click="openEdit({{$res['id']}})" type="button" class="btn btn-sm btn-success">Edit</button>
-                            <button wire:click="openEdit({{$res['id']}})" type="button" class="btn btn-sm btn-success">Trigger List</button>
+                            <!--<button wire:click="openEdit({{$res['id']}})" type="button" class="btn btn-sm btn-success">Trigger List</button>-->
                             <button wire:click="openDelete({{$res['id']}})" type="button" class="btn btn-sm btn-danger">Delete</button>
                         </td>
                     </tr>
