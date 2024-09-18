@@ -189,22 +189,22 @@ new class extends Component {
             <form wire:submit="updateUser">
                 <div>
                     <x-input-label for="name" :value="__('Name')" />
-                    <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
+                    <x-text-input wire:model="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
                     <x-input-error class="mt-2" :messages="$errors->get('name')" />
                 </div>
                 <div>
                     <x-input-label for="address" :value="__('Address')" />
-                    <x-text-input wire:model="address" id="address" name="address" type="text" class="mt-1 block w-full" required autofocus autocomplete="address" />
+                    <x-text-input wire:model="address" name="address" type="text" class="mt-1 block w-full" required autofocus autocomplete="address" />
                     <x-input-error class="mt-2" :messages="$errors->get('address')" />
                 </div>
                 <div>
                     <x-input-label for="number" :value="__('Number')" />
-                    <x-text-input wire:model="number" id="number" name="number" type="text" class="mt-1 block w-full" required autofocus autocomplete="number" />
+                    <x-text-input wire:model="number" name="number" type="text" class="mt-1 block w-full" required autofocus autocomplete="number" />
                     <x-input-error class="mt-2" :messages="$errors->get('number')" />
                 </div>
                 <div>
                     <x-input-label for="usertype" :value="__('Usertype')" />
-                    <select wire:model="usertype" id="usertype" class="rounded-md select block mt-1 w-full" name="usertype">
+                    <select wire:model="usertype" class="rounded-md select block mt-1 w-full" name="usertype">
                         <option value="">Please Select User Type</option>
                         <option value="Owner">Owner</option>
                         <option value="Fireman">Fireman</option>
@@ -214,7 +214,7 @@ new class extends Component {
                 </div>
                 <div>
                     <x-input-label for="email" :value="__('Email')" />
-                    <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autocomplete="email" />
+                    <x-text-input wire:model="email" class="block mt-1 w-full" type="email" name="email" required autocomplete="email" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
                 <div class="mt-6 flex justify-end">
