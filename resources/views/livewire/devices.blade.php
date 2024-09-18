@@ -8,6 +8,7 @@ new class extends Component {
     public $results =[];
     public $users =[];
     public $devices = [];
+    public $alarms = [];
 
     public $id = '';
     public $userid = '';
@@ -130,11 +131,33 @@ new class extends Component {
         session()->flash('message', 'Deleted Succesfully');
         $this->redirect(route('user.devices'));
     }
+
+    //triger
+    public function openTriger($id){
+        $this->alarms = [];
+        $alarms = DB::table('devices')->join('triger','devices.id','=','triger.device_id')
+        ->join('users','users.id','=','triger.user_id')
+        ->select('users.name as responder','triger.updated_at as res_time', 'triger.created_at as alarm_time')
+        ->where('devices.id', '=', $id)->get();
+
+        foreach ($alarms as $alarm) {
+            $this->alarms [] =[
+                'responder' => $alarm->responder,
+                'res_time' => $alarm->res_time,
+                'alarm_time' => $alarm->alarm_time,
+            ];
+        }
+        $this->dispatch('showTrigerModal');
+    }
 }; ?>
 
 <div>
     <div class="container-sm">
-        <button wire:click="openNew()" type="button" class="btn btn-primary ml-3 mt-3 mb-2">New Device</button>
+        @if (Auth::user()->usertype == 'Admin')
+            <button wire:click="openNew()" type="button" class="btn btn-primary ml-3 mt-3 mb-2">New Device</button>
+        @else
+            <div class="ml-3 mt-3"></div>
+        @endif
         <table class="ml-3 table table-striped table-hover" style="width: 100%">
             <thead class="text-center">
               <tr>
@@ -156,7 +179,7 @@ new class extends Component {
                         <td>{{$res['number']}}</td>
                         <td>
                             <button wire:click="openEdit({{$res['id']}})" type="button" class="btn btn-sm btn-success">Edit</button>
-                            <!--<button wire:click="openEdit({{$res['id']}})" type="button" class="btn btn-sm btn-success">Trigger List</button>-->
+                            <button wire:click="openTriger({{$res['id']}})" type="button" class="btn btn-sm btn-success">Trigger List</button>
                             <button wire:click="openDelete({{$res['id']}})" type="button" class="btn btn-sm btn-danger">Delete</button>
                         </td>
                     </tr>
@@ -320,6 +343,38 @@ new class extends Component {
       </div>
     </div>
   </div>
+
+  <!-- triger list -->
+  <div class="modal fade" id="trigerModal" tabindex="-1" aria-labelledby="trigerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger">
+          <h1 class="modal-title fs-5" id="trigerModalLabel">DEVICES</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <table class="ml-3 table table-striped table-hover" style="width: 100%">
+                <thead class="text-center">
+                  <tr>
+                    <th scope="col">Responder</th>
+                    <th scope="col">Response Time</th>
+                    <th scope="col">Alarm Time</th>
+                  </tr>
+                </thead>
+                <tbody class="table-group-divider text-center">
+                    @foreach ($this->alarms as $alarm)
+                        <tr>
+                            <th scope="row">{{$alarm['responder']}}</th>
+                            <td>{{$alarm['res_time']}}</td>
+                            <td>{{$alarm['alarm_time']}}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+              </table>
+        </div>
+      </div>
+    </div>
+  </div>
     <!-- end of div -->
 </div>
 @script
@@ -332,6 +387,9 @@ new class extends Component {
     });
     $wire.on('showDeleteModal', () => {
       $('#deleteModal').modal('show');
+    });
+    $wire.on('showTrigerModal', () => {
+      $('#trigerModal').modal('show');
     });
     $wire.on('close', () => {
       $('#deleteModal').modal('hide');

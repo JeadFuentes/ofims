@@ -3,6 +3,9 @@
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
 use Livewire\Attributes\On;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use App\Models\User;
 
 new class extends Component {
@@ -15,6 +18,10 @@ new class extends Component {
     public $usertype = '';
     public $email = '';
     public $id = '';
+
+    //reset
+    public string $password = '';
+    public string $password_confirmation = '';
 
     public function mount(){
         $users = User::all();
@@ -77,11 +84,45 @@ new class extends Component {
         session()->flash('message', 'Deletes Succesfully');
         $this->redirect(route('user.user'));
     }
+
+    //reset password
+    public function openResetPassword($id)
+    {
+        $this->id = $id;
+        $this->dispatch('openResetPassword');
+    }
+
+    public function resetPassword()
+    {
+        $user = User::find($this->id);
+        try {
+            $validated = $this->validate([
+                'password' => ['required', 'string', Password::defaults(), 'confirmed'],
+            ]);
+        } catch (ValidationException $e) {
+            $this->reset('password', 'password_confirmation');
+            
+            throw $e;
+        }
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        $this->reset('password', 'password_confirmation');
+
+        session()->flash('message', 'Saved Succesfully');
+        $this->redirect(route('user.user'));
+    }
 }; ?>
 
 <div>
     <div class="container-sm">
-        <button type="button" class="btn btn-primary ml-0 mt-3 mb-2" data-bs-toggle="modal" data-bs-target="#usermodal">New user</button>
+        @if (Auth::user()->usertype == 'Admin')
+            <button type="button" class="btn btn-primary ml-0 mt-3 mb-2" data-bs-toggle="modal" data-bs-target="#usermodal">New user</button>
+        @else
+            <div class="ml-0 mt-3"></div>
+        @endif
         <x-user-modal>
         </x-user-modal>
         <table class="ml-3 table table-striped table-hover" style="width: 100%">
@@ -97,20 +138,41 @@ new class extends Component {
               </tr>
             </thead>
             <tbody class="table-group-divider text-center">
-                @foreach ($this->results as $user)
-                <tr>
-                    <th scope="row">{{$user['id']}}</th>
-                    <td>{{$user['name']}}</td>
-                    <td>{{$user['address']}}</td>
-                    <td>{{$user['number']}}</td>
-                    <td>{{$user['usertype']}}</td>
-                    <td>{{$user['email']}}</td>
-                    <td>
-                        <button wire:click="openEdit({{$user['id']}})" type="button" class="btn btn-sm btn-success">Edit</button>
-                        <button wire:click="openDelete({{$user['id']}})" type="button" class="btn btn-sm btn-danger">Delete</button>
-                    </td>
-                </tr>
-                @endforeach
+                @if (Auth::user()->usertype == 'Admin')
+                    @foreach ($this->results as $user)
+                    <tr>
+                        <th scope="row">{{$user['id']}}</th>
+                        <td>{{$user['name']}}</td>
+                        <td>{{$user['address']}}</td>
+                        <td>{{$user['number']}}</td>
+                        <td>{{$user['usertype']}}</td>
+                        <td>{{$user['email']}}</td>
+                        <td>
+                            <button wire:click="openEdit({{$user['id']}})" type="button" class="btn btn-sm btn-success">Edit</button>
+                            <button wire:click="openResetPassword({{$user['id']}})" type="button" class="btn btn-sm btn-success">Reset Password</button>
+                            <button wire:click="openDelete({{$user['id']}})" type="button" class="btn btn-sm btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                    @endforeach
+                @else
+                    @foreach ($this->results as $user)
+                        @if (Auth::user()->id == $user['id'])
+                        <tr>
+                            <th scope="row">{{$user['id']}}</th>
+                            <td>{{$user['name']}}</td>
+                            <td>{{$user['address']}}</td>
+                            <td>{{$user['number']}}</td>
+                            <td>{{$user['usertype']}}</td>
+                            <td>{{$user['email']}}</td>
+                            <td>
+                                <button wire:click="openEdit({{$user['id']}})" type="button" class="btn btn-sm btn-success">Edit</button>
+                                <button wire:click="openResetPassword({{$user['id']}})" type="button" class="btn btn-sm btn-success">Change Password</button>
+                                <button wire:click="openDelete({{$user['id']}})" type="button" class="btn btn-sm btn-danger">Delete</button>
+                            </td>
+                        </tr>
+                        @endif
+                    @endforeach
+                @endif
             </tbody>
           </table>
         </div>
@@ -132,12 +194,12 @@ new class extends Component {
                 </div>
                 <div>
                     <x-input-label for="address" :value="__('Address')" />
-                    <x-text-input wire:model="address" id="address" name="address" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
+                    <x-text-input wire:model="address" id="address" name="address" type="text" class="mt-1 block w-full" required autofocus autocomplete="address" />
                     <x-input-error class="mt-2" :messages="$errors->get('address')" />
                 </div>
                 <div>
                     <x-input-label for="number" :value="__('Number')" />
-                    <x-text-input wire:model="number" id="number" name="number" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
+                    <x-text-input wire:model="number" id="number" name="number" type="text" class="mt-1 block w-full" required autofocus autocomplete="number" />
                     <x-input-error class="mt-2" :messages="$errors->get('number')" />
                 </div>
                 <div>
@@ -152,7 +214,7 @@ new class extends Component {
                 </div>
                 <div>
                     <x-input-label for="email" :value="__('Email')" />
-                    <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autocomplete="username" />
+                    <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autocomplete="email" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
                 <div class="mt-6 flex justify-end">
@@ -203,6 +265,43 @@ new class extends Component {
         </div>
     </div>
 
+    <!--Reset Password-->
+    <div class="modal fade" id="resetPassword" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h1 class="modal-title fs-5" id="resetModalLabel">RESET USER PASSWORD</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form wire:submit="resetPassword">
+                    <div>
+                        <x-input-label for="update_password_password" :value="__('New Password')" />
+                        <x-text-input wire:model="password" id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
+                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                    </div>
+            
+                    <div>
+                        <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
+                        <x-text-input wire:model="password_confirmation" id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
+                        <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                    </div>
+            
+                    <div class="flex items-center justify-end mt-4">
+                        <x-secondary-button x-on:click="$dispatch('close')">
+                            {{ __('Cancel') }}
+                        </x-secondary-button>
+
+                        <x-primary-button>
+                            {{ __('Reset Password') }}
+                        </x-primary-button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div>
+
     <!--end of div-->
 </div>
 @script
@@ -212,6 +311,9 @@ new class extends Component {
     });
     $wire.on('showDeleteModal', () => {
       $('#deleteModal').modal('show');
+    });
+    $wire.on('openResetPassword', () => {
+      $('#resetPassword').modal('show');
     });
     $wire.on('close', () => {
       $('#editModal').modal('hide');

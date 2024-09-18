@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     @vite(['resources/sass/app.scss','resources/css/app.css', 'resources/js/app.js'])
 </head>
+<marquee style="color:white;width:90%;" onmouseover="this.stop()" onmouseout="this.start()"><br /> <b>
+    Welcome {{Auth::user()->name}} Designation {{Auth::user()->usertype}} </b> <br />
+</marquee>"
 <body style="background-color: #550000 ">
     <div class="container text-center mt-5 mb-3">
         <h1 class="fs-1 fw-bolder text-danger">ONLINE FIRE INCIDENT MAPPING SYSTEM</h1>
@@ -47,7 +50,16 @@
                             <a class="nav-link" href="{{ route('user.alarm') }}">Alarm</a>
                         </li>
                     @endif
-                @elseif (Auth::user()->usertype == 'Firefighter')
+                @elseif (Auth::user()->usertype == 'Fireman')
+                     @if ($title == 'user')
+                        <li id="user" class="nav-item bg-danger fw-bolder">
+                            <a class="nav-link" href="{{ route('user.user') }}">User</a>
+                        </li>
+                    @else
+                        <li id="user" class="nav-item">
+                            <a class="nav-link" href="{{ route('user.user') }}">User</a>
+                        </li>
+                    @endif
                     @if ($title == 'alarm')
                         <li id="alarm" class="nav-item bg-danger fw-bolder">
                             <a class="nav-link" href="{{ route('user.alarm') }}">Alarm</a>
@@ -58,6 +70,15 @@
                         </li>
                     @endif
                 @elseif (Auth::user()->usertype == 'Owner')
+                    @if ($title == 'user')
+                        <li id="user" class="nav-item bg-danger fw-bolder">
+                            <a class="nav-link" href="{{ route('user.user') }}">User</a>
+                        </li>
+                    @else
+                        <li id="user" class="nav-item">
+                            <a class="nav-link" href="{{ route('user.user') }}">User</a>
+                        </li>
+                    @endif
                     @if ($title == 'devices')
                             <li id="devices" class="nav-item bg-danger fw-bolder">
                                 <a class="nav-link" href="{{ route('user.devices') }}">Devices</a>
@@ -72,9 +93,7 @@
                     <a class="nav-link" href="{{ route('user.logout') }}">Logout</a>
                 </li>
             </ul>
-              <button class="btn btn-outline-danger" type="button"  data-toggle="modal" data-target="#form">
-                <i class="fa-regular fa-bell"></i>
-              </button>
+                <livewire:navalarm />
           </div>
         </div>
       </nav>

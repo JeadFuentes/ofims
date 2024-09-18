@@ -61,7 +61,9 @@ new class extends Component {
                             <td>{{$res['device_name']}}</td>
                             <td>{{$res['alarm_time']}}</td>
                             <td>
-                                <button wire:click="respond({{$res['id']}})" type="button" class="btn btn-sm btn-danger">RESPOND</button>
+                                @if (Auth::user()->usertype == 'Fireman')
+                                    <button wire:click="respond({{$res['id']}})" type="button" class="btn btn-sm btn-danger">RESPOND</button>
+                                @endif
                                 <button wire:click="openMaps({{$res['id']}})" type="button" class="btn btn-sm btn-success">VIEW MAP</button>
                             </td>
                           </tr>
