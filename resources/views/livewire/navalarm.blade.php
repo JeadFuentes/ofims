@@ -6,9 +6,15 @@ new class extends Component {
     public $results;
 
     public function mount(){
-        $alarms = DB::table('devices')->join('triger','devices.id','=','triger.device_id')
-        ->select('triger.id as id','devices.dev_name as device_name',
-        'triger.updated_at as res_time', 'triger.created_at as alarm_time', 'triger.user_id as user')->get();
+        $alarms = DB::table('triger')
+        ->leftJoin('devices', 'devices.id', '=', 'triger.device_id')
+        ->select(
+            'triger.id as id',
+            'devices.dev_name as device_name',
+            'triger.updated_at as res_time',
+            'triger.created_at as alarm_time',
+            'triger.user_id as user'
+        )->get();
 
         foreach ($alarms as $alarm) {
             if (! $alarm->user) {
