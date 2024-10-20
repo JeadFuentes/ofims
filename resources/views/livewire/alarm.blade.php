@@ -1,17 +1,30 @@
 <?php
 
 use Livewire\Volt\Component;
+use Livewire\WithPagination;
 
 new class extends Component {
+    use WithPagination;
+
+    public $sortBy = 'id';
+    public $sortDirection = 'asc';
+    public $perPage = 5;
+    public $search = '';
     public $results =[];
 
-    public function mount(){
-        $alarms = DB::table('devices')->join('triger','devices.id','=','triger.device_id')
-        ->join('users','users.id','=','triger.user_id')
-        ->select('triger.id as id','devices.dev_name as device_name', 'users.name as responder',
-        'triger.updated_at as res_time', 'triger.created_at as alarm_time')->get();
-
-        foreach ($alarms as $alarm) {
+    #[On('reload')]
+    public function with(): array{
+        $this->results = [];
+            $alarms = DB::table('devices')->join('triger','devices.id','=','triger.device_id')
+                ->join('users','users.id','=','triger.user_id')
+                ->select('triger.id as id','devices.dev_name as device_name', 'users.name as responder',
+                'triger.updated_at as res_time', 'triger.created_at as alarm_time')
+                ->where('device_id', 'like', '%'.$this->search.'%')
+                ->orWhere('dev_name', 'like', '%'.$this->search.'%')
+                ->orWhere('name', 'like', '%'.$this->search.'%')
+                ->orderBy($this->sortBy, $this->sortDirection)
+                ->get();
+            foreach ($alarms as $alarm) {
             $this->results [] =[
                 'id' => $alarm->id,
                 'device_name' => $alarm->device_name,
@@ -20,6 +33,25 @@ new class extends Component {
                 'alarm_time' => $alarm->alarm_time,
             ];
         }
+            return [
+                'devices' => $this->results,
+        ];
+    }
+
+    public function sortingBy($field){
+        if ($this->sortDirection == 'asc'){
+            $this->sortDirection = 'desc';
+        }
+        else{
+            $this->sortDirection = 'asc';
+        }
+
+        $this->dispatch('reload');
+        return $this->sortBy = $field;
+    }
+
+    public function updatingSearch(){
+      $this->resetPage();
     }
 
     public function openMaps($id){
@@ -29,15 +61,16 @@ new class extends Component {
 
 <div>
     <div class="container-sm">
+        <input id="searchTxt" class="form-control my-4" type="text" placeholder="search">
         <!--<button type="button" class="btn btn-primary ml-3 mt-3 mb-2">New Device</button>-->
-        <table class="ml-3 mt-5 table table-striped table-hover" style="width: 100%">
+        <table class="ml-3 mt-4 table table-striped table-hover" style="width: 100%">
             <thead class="text-center">
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">Device name</th>
-                <th scope="col">Responder</th>
-                <th scope="col">Response Time</th>
-                <th scope="col">Alarm Time</th>
+                <th style="cursor: pointer" wire:click="sortingBy('id')" scope="col">#</th>
+                <th style="cursor: pointer" wire:click="sortingBy('device_name')" scope="col">Device name</th>
+                <th style="cursor: pointer" wire:click="sortingBy('responder')" scope="col">Responder</th>
+                <th style="cursor: pointer" wire:click="sortingBy('res_time')" scope="col">Response Time</th>
+                <th style="cursor: pointer" wire:click="sortingBy('alarm_time')" scope="col">Alarm Time</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
@@ -56,5 +89,15 @@ new class extends Component {
                 @endforeach
             </tbody>
           </table>
-        </div>
+    </div>
 </div>
+@script
+    <script>
+    $(document).ready(function(){
+      $('#searchTxt').on('keyup',function(){
+        @this.search = $(this).val();
+        @this.call('with');
+      })
+    });
+    </script>
+@endscript

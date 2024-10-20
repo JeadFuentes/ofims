@@ -3,8 +3,11 @@
 use Livewire\Volt\Component;
 use App\Models\Devices;
 use App\Models\User;
+use Livewire\WithPagination;
 
 new class extends Component {
+    use WithPagination;
+
     public $results =[];
     public $users =[];
     public $devices = [];
@@ -17,13 +20,27 @@ new class extends Component {
     public $dev_address = '';
     public $dev_number = '';
 
-    public function mount(){
-        if (Auth::user()->usertype == 'Admin'){
-            $devices = DB::table('users')->join('devices','users.id','=','devices.userid')
-            ->select('devices.id as id', 'users.name as owner', 'devices.dev_name as name', 'devices.dev_serial as serial',
-            'devices.dev_address as address', 'devices.dev_number as number')->get();
+    public $sortBy = 'id';
+    public $sortDirection = 'asc';
+    public $perPage = 5;
+    public $search = '';
 
-            foreach ($devices as $dev) {
+    #[On('reload')]
+    public function with(): array{
+        if (Auth::user()->usertype == 'Admin'){
+            $this->results = [];
+            $dev = DB::table('users')->join('devices','users.id','=','devices.userid')
+                ->select('devices.id as id', 'users.name as owner', 'devices.dev_name as name', 'devices.dev_serial as serial',
+                'devices.dev_address as address', 'devices.dev_number as number')
+                ->where('userid', 'like', '%'.$this->search.'%')
+                ->orWhere('dev_name', 'like', '%'.$this->search.'%')
+                ->orWhere('name', 'like', '%'.$this->search.'%')
+                ->orWhere('dev_serial', 'like', '%'.$this->search.'%')
+                ->orWhere('dev_address', 'like', '%'.$this->search.'%')
+                ->orWhere('dev_number', 'like', '%'.$this->search.'%')
+                ->orderBy($this->sortBy, $this->sortDirection)->get();
+
+            foreach ($dev as $dev) {
                 $this->results [] =[
                 'id' => $dev->id,
                 'owner' => $dev->owner,
@@ -33,13 +50,24 @@ new class extends Component {
                 'number' => $dev->number,
             ];
             }
+            return [
+                'devices' => $this->results,
+        ];
         }
         else{
-            $devices = DB::table('users')->join('devices','users.id','=','devices.userid')
-            ->select('devices.id as id', 'users.name as owner', 'devices.dev_name as name', 'devices.dev_serial as serial',
-            'devices.dev_address as address', 'devices.dev_number as number')->where('devices.userid',Auth::user()->id)->get();
+            $this->results = [];
+            $dev = DB::table('users')->join('devices','users.id','=','devices.userid')
+                ->select('devices.id as id', 'users.name as owner', 'devices.dev_name as name', 'devices.dev_serial as serial',
+                'devices.dev_address as address', 'devices.dev_number as number')->where('devices.userid',Auth::user()->id)
+                ->where('userid', 'like', '%'.$this->search.'%')
+                ->orWhere('dev_name', 'like', '%'.$this->search.'%')
+                ->orWhere('name', 'like', '%'.$this->search.'%')
+                ->orWhere('dev_serial', 'like', '%'.$this->search.'%')
+                ->orWhere('dev_address', 'like', '%'.$this->search.'%')
+                ->orWhere('dev_number', 'like', '%'.$this->search.'%')
+                ->orderBy($this->sortBy, $this->sortDirection)->get();
 
-            foreach ($devices as $dev) {
+                foreach ($dev as $dev) {
                 $this->results [] =[
                 'id' => $dev->id,
                 'owner' => $dev->owner,
@@ -49,7 +77,26 @@ new class extends Component {
                 'number' => $dev->number,
             ];
             }
+           return [
+                'devices' => $this->results,
+            ];
         }
+    }
+
+    public function sortingBy($field){
+        if ($this->sortDirection == 'asc'){
+            $this->sortDirection = 'desc';
+        }
+        else{
+            $this->sortDirection = 'asc';
+        }
+
+        $this->dispatch('reload');
+        return $this->sortBy = $field;
+    }
+
+    public function updatingSearch(){
+      $this->resetPage();
     }
 
     //new devices
@@ -154,19 +201,29 @@ new class extends Component {
 <div>
     <div class="container-sm">
         @if (Auth::user()->usertype == 'Admin')
-            <button wire:click="openNew()" type="button" class="btn btn-primary ml-3 mt-3 mb-2">New Device</button>
+        <div class="container my-4">
+            <div class="row">
+              <div class="col-sm">
+                <button wire:click="openNew()" type="button" class="btn btn-primary w-50">New Device</button>
+              </div>
+              <div class="col-sm">
+                <input id="searchTxt" class="form-control" type="text" placeholder="search">
+              </div>
+            </div>
+        </div>
+            
         @else
             <div class="ml-3 mt-3"></div>
         @endif
         <table class="ml-3 table table-striped table-hover" style="width: 100%">
             <thead class="text-center">
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">Owner</th>
-                <th scope="col">Name</th>
-                <th scope="col">Serial</th>
-                <th scope="col">Number</th>
-                <th scope="col">Action</th>
+                <th style="cursor: pointer" wire:click="sortingBy('id')" scope="col">#</th>
+                <th style="cursor: pointer" wire:click="sortingBy('owner')" scope="col">Owner</th>
+                <th style="cursor: pointer" wire:click="sortingBy('name')" scope="col">Name</th>
+                <th style="cursor: pointer" wire:click="sortingBy('serial')" scope="col">Serial</th>
+                <th style="cursor: pointer" wire:click="sortingBy('name')" scope="col">Number</th>
+                <th style="cursor: pointer" wire:click="sortingBy('action')" scope="col">Action</th>
               </tr>
             </thead>
             <tbody class="table-group-divider text-center">
@@ -379,6 +436,13 @@ new class extends Component {
 </div>
 @script
  <script>
+    $(document).ready(function(){
+      $('#searchTxt').on('keyup',function(){
+        @this.search = $(this).val();
+        @this.call('with');
+      })
+    });
+
     $wire.on('openAddNewModal', () => {
       $('#addNewModal').modal('show');
     });

@@ -16,4 +16,14 @@ class Devices extends Model
         'dev_address',
         'dev_number',
     ];
+
+    public function scopeSearch($query, $val){
+        return $query->where(function($q) use ($val) {
+            $q->where('userid', 'like', '%'.$val.'%')
+              ->orWhere('dev_name', 'like', '%'.$val.'%')
+              ->orWhere('dev_serial', 'like', '%'.$val.'%')
+              ->orWhere('dev_address', 'like', '%'.$val.'%')
+              ->orWhere('dev_number', 'like', '%'.$val.'%');
+        });
+    }
 }

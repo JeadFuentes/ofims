@@ -7,8 +7,11 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use App\Models\User;
+use Livewire\WithPagination;
 
 new class extends Component {
+    use WithPagination;
+
     public $users = [];
     public $results = [];
 
@@ -19,24 +22,38 @@ new class extends Component {
     public $email = '';
     public $id = '';
 
+    public $sortBy = 'id';
+    public $sortDirection = 'asc';
+    public $perPage = 10;
+    public $search = '';
+
     //reset
     public string $password = '';
     public string $password_confirmation = '';
 
-    public function mount(){
-        $users = User::all();
-
-        foreach ($users as $user) {
-            $this->results [] = [
-            'id' => $user->id,
-            'name' => $user->name,
-            'address' => $user->address,
-            'number' => $user->number,
-            'usertype' => $user->usertype,
-            'email' => $user->email,
+    #[On('reload')]
+    public function with(): array{
+        return [
+            'userList' => User::search($this->search)->orderBy($this->sortBy, $this->sortDirection)->paginate($this->perPage),
         ];
-        }   
     }
+
+    public function sortingBy($field){
+        if ($this->sortDirection == 'asc'){
+            $this->sortDirection = 'desc';
+        }
+        else{
+            $this->sortDirection = 'asc';
+        }
+
+        $this->dispatch('reload');
+        return $this->sortBy = $field;
+    }
+
+    public function updatingSearch(){
+      $this->resetPage();
+    }
+
     //edit
     public function openEdit($id){
         $this->users = User::find($id);
@@ -119,7 +136,16 @@ new class extends Component {
 <div>
     <div class="container-sm">
         @if (Auth::user()->usertype == 'Admin')
-            <button type="button" class="btn btn-primary ml-0 mt-3 mb-2" data-bs-toggle="modal" data-bs-target="#usermodal">New user</button>
+        <div class="container my-4">
+            <div class="row">
+              <div class="col-sm">
+                <button type="button" class="btn btn-primary w-50" data-bs-toggle="modal" data-bs-target="#usermodal">New user</button>
+              </div>
+              <div class="col-sm">
+                <input id="searchTxt" class="form-control" type="text" placeholder="search">
+              </div>
+            </div>
+        </div>
         @else
             <div class="ml-0 mt-3"></div>
         @endif
@@ -128,18 +154,18 @@ new class extends Component {
         <table class="ml-3 table table-striped table-hover" style="width: 100%">
             <thead class="text-center">
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">Name</th>
-                <th scope="col">Address</th>
-                <th scope="col">Number</th>
-                <th scope="col">Usertype</th>
-                <th scope="col">Username</th>
+                <th style="cursor: pointer" wire:click="sortingBy('id')" scope="col">#</th>
+                <th style="cursor: pointer" wire:click="sortingBy('name')" scope="col">Name</th>
+                <th style="cursor: pointer" wire:click="sortingBy('address')" scope="col">Address</th>
+                <th style="cursor: pointer" wire:click="sortingBy('number')" scope="col">Number</th>
+                <th style="cursor: pointer" wire:click="sortingBy('usertype')" scope="col">Usertype</th>
+                <th style="cursor: pointer" wire:click="sortingBy('email')" scope="col">Username</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody class="table-group-divider text-center">
                 @if (Auth::user()->usertype == 'Admin')
-                    @foreach ($this->results as $user)
+                    @foreach ($userList as $user)
                     <tr>
                         <th scope="row">{{$user['id']}}</th>
                         <td>{{$user['name']}}</td>
@@ -155,7 +181,7 @@ new class extends Component {
                     </tr>
                     @endforeach
                 @else
-                    @foreach ($this->results as $user)
+                    @foreach ($userList as $user)
                         @if (Auth::user()->id == $user['id'])
                         <tr>
                             <th scope="row">{{$user['id']}}</th>
@@ -175,6 +201,9 @@ new class extends Component {
                 @endif
             </tbody>
           </table>
+          <div class="text-white" style="color: white !important">
+            {{$userList->links()}}
+          </div>
         </div>
           <!--modals-->  
   <!--edit modal-->
@@ -306,6 +335,13 @@ new class extends Component {
 </div>
 @script
  <script>
+    $(document).ready(function(){
+      $('#searchTxt').on('keyup',function(){
+        @this.search = $(this).val();
+        @this.call('with');
+      })
+    });
+
     $wire.on('showEditModal', () => {
       $('#editModal').modal('show');
     });
